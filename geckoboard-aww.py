@@ -13,7 +13,7 @@ def get_awws():
     awws_page2 = requests.get("http://www.reddit.com/r/aww.json?after=%s" % (awws_page1['data']['after']), headers=ua).json()
 
     awws = random.sample(parse_awws(awws_page1) + parse_awws(awws_page2), 10)
-    awws = [{"text": "<img src=%s style=\"width:200px\">" % (url)} for url in awws]
+    awws = [{"text": "<img src=\"%s\" style=\"width:200px\">" % (url)} for url in awws]
     return jsonify({"item": awws})
 
 
