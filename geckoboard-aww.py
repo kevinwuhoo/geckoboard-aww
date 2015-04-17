@@ -18,9 +18,19 @@ def get_awws():
 
 
 def parse_awws(awws):
-    return [aww['data']['url'] for aww in awws['data']['children']
-            if 'url' in aww['data'] and
-            aww['data']['url'].endswith(('png', 'gif', 'jpg', 'jpeg'))]
+    valid_awws = []
+
+    for aww in awws['data']['children']:
+        if not 'url' in aww['data']:
+            return
+
+        if aww['data']['url'].endswith(('png', 'gif', 'jpg', 'jpeg')):
+            valid_awws.append(aww['data']['url'])
+
+        if aww['data']['url'].endswith('gifv'):
+            valid_awws.append(aww['data']['url'].replace('gifv', 'gif'))
+
+    return valid_awws
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
