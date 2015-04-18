@@ -8,14 +8,17 @@ app = Flask(__name__)
 
 @app.route('/')
 def get_awws():
-    ua = {'User-Agent': 'Geckoboard awws by /u/episome'}
-    awws_page1 = requests.get("http://www.reddit.com/r/aww.json", headers=ua).json()
-    awws_page2 = requests.get("http://www.reddit.com/r/aww.json?after=%s" % (awws_page1['data']['after']), headers=ua).json()
-
-    awws = random.sample(parse_awws(awws_page1) + parse_awws(awws_page2), 10)
+    images = get_subreddit_submissions('aww') + get_subreddit_submissions('animalsbeingderps')
+    awws = random.sample(images, 10)
     awws = [{"text": "<img src=\"%s\" style=\"width:200px\">" % (url)} for url in awws]
     return jsonify({"item": awws})
 
+def get_subreddit_submissions(subreddit):
+    ua = {'User-Agent': 'Geckoboard awws by /u/episome'}
+    page1 = requests.get("http://www.reddit.com/r/{}.json".format(subreddit), headers=ua).json()
+    page2 = requests.get("http://www.reddit.com/r/{}.json?after={}".format(subreddit, page1['data']['after']), headers=ua).json()
+
+    return parse_awws(page1) + parse_awws(page2)
 
 def parse_awws(awws):
     valid_awws = []
